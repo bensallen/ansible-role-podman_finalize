@@ -1,0 +1,18 @@
+---
+podman_build_host: localhost
+
+# Name of the container
+podman_target_name: "{{ inventory_hostname }}"
+
+# Git short hash of the parent Ansible project
+podman_git_ref: ""
+
+podman_rev: "{{ ansible_date_time.iso8601_basic_short }}_{{ podman_git_ref }}"
+
+podman_working_name: "{{ podman_target_name }}_{{ podman_rev }}"
+
+podman_commit: true
+
+podman_export: true
+
+podman_export_output_path: "{{ podman_target_name }}.tar"

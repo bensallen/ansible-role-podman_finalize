@@ -1,0 +1,15 @@
+---
+- block:
+  - name: Commit container
+    command: podman container commit "{{ podman_working_name }}" "{{ podman_target_name }}:{{ podman_rev }}"
+    when: podman_commit|bool
+  - name: Export container to tarfile with podman
+    containers.podman.podman_export:
+      dest: "{{ podman_export_output_path }}"
+      container: "{{ podman_working_name }}"
+    when: podman_export|bool
+  - name: Cleanup temporary container with podman
+    containers.podman.podman_container:
+      name: "{{ podman_working_name }}"
+      state: absent
+  delegate_to: "{{ podman_build_host }}"
