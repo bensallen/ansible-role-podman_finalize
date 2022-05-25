@@ -11,8 +11,12 @@ podman_rev: "{{ ansible_date_time.iso8601_basic_short }}_{{ podman_git_ref }}"
 
 podman_working_name: "{{ podman_target_name }}_{{ podman_rev }}"
 
+# List of file paths to remove before finalizing the image
+podman_erase_files_on_teardown: []
+
 podman_commit: true
 
 podman_export: true
 
 podman_export_output_path: "{{ podman_target_name }}.tar"
+

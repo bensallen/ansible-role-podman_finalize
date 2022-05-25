@@ -1,4 +1,10 @@
 ---
+- name: Cleanup configured files before teardown
+  file:
+    state: absent
+    name: "{{ item }}"
+  loop: "{{ podman_erase_files_on_teardown }}"
+
 - block:
   - name: Commit container
     command: podman container commit "{{ podman_working_name }}" "{{ podman_target_name }}:{{ podman_rev }}"
