@@ -11,12 +11,22 @@ podman_rev: "{{ ansible_date_time.iso8601_basic_short }}_{{ podman_git_ref }}"
 
 podman_working_name: "{{ podman_target_name }}_{{ podman_rev }}"
 
-# List of file paths to remove before finalizing the image
-podman_erase_files_on_teardown: []
-
+# Commit the container to the local repository using the above target as
+# the name and rev as the tag
 podman_commit: true
 
+# Export the container image to a compressed tar file
 podman_export: true
 
-podman_export_output_path: "{{ podman_target_name }}.tar"
+# List of file paths to remove before finalizing the image
+# paths should include a leading '/', eg. '/var/log/*'.
+# These values are passed directly to find like so:
+# find . -path <exclude1> -print -o -path <exclude2> -prune -o -print
+podman_export_excludes: "{{ podman_export_excludes_default }}"
+
+podman_export_output_path: "{{ playbook_dir }}/{{ podman_target_name }}.tar.gz"
+
+podman_export_archive_cmd: "bsdcpio --quiet -o -H pax"
+
+podman_export_compress_cmd: "pigz"
 

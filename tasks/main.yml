@@ -1,19 +1,37 @@
 ---
-- name: Cleanup configured files before teardown
-  file:
-    state: absent
-    name: "{{ item }}"
-  loop: "{{ podman_erase_files_on_teardown }}"
-
 - block:
+  - name: Set OS dependent variables
+    include_vars: "{{lookup('first_found', params)}}"
+    vars:
+      params:
+        files:
+          - "{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+          - "{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml"
+        paths:
+          - 'vars'
+
   - name: Commit container
-    command: podman container commit "{{ podman_working_name }}" "{{ podman_target_name }}:{{ podman_rev }}"
+    ansible.builtin.command: podman container commit "{{ podman_working_name }}" "{{ podman_target_name }}:{{ podman_rev }}"
     when: podman_commit|bool
-  - name: Export container to tarfile with podman
-    containers.podman.podman_export:
-      dest: "{{ podman_export_output_path }}"
-      container: "{{ podman_working_name }}"
+
+  - block:
+    - set_fact:
+        podman_find_cmd: find .{% for path in podman_export_excludes %} -path {{ '.' + path|quote }} -prune -o{% endfor %} -print
+
+    - name: Mount container
+      ansible.builtin.command: podman unshare -- podman mount "{{ podman_working_name }}"
+      register: podman_mount_path
+
+    - name: Export container
+      ansible.builtin.shell:
+        cmd: "{{ podman_find_cmd }} | {{ podman_export_archive_cmd }} | {{ podman_export_compress_cmd }} > {{ podman_export_output_path|quote }}"
+        chdir: "{{ podman_mount_path.stdout }}"
+
+    - name: Unmount container
+      ansible.builtin.command: podman unshare -- podman umount "{{ podman_working_name }}"
+
     when: podman_export|bool
+
   - name: Cleanup temporary container with podman
     containers.podman.podman_container:
       name: "{{ podman_working_name }}"
