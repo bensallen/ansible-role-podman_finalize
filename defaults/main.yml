@@ -7,9 +7,9 @@ podman_target_name: "{{ inventory_hostname }}"
 # Git short hash of the parent Ansible project
 podman_git_ref: ""
 
-podman_rev: "{{ ansible_date_time.iso8601_basic_short }}_{{ podman_git_ref }}"
+podman_rev: "{{ ansible_date_time.iso8601_basic_short }}-{{ podman_git_ref }}"
 
-podman_working_name: "{{ podman_target_name }}_{{ podman_rev }}"
+podman_working_name: "{{ podman_target_name }}-{{ podman_rev }}"
 
 # Commit the container to the local repository using the above target as
 # the name and rev as the tag
@@ -24,7 +24,7 @@ podman_export: true
 # find . -path <exclude1> -print -o -path <exclude2> -prune -o -print
 podman_export_excludes: "{{ podman_export_excludes_default }}"
 
-podman_export_output_path: "{{ playbook_dir }}/{{ podman_target_name }}.tar.gz"
+podman_export_output_path: "{{ playbook_dir }}/{{ podman_working_name }}.tar.gz"
 
 podman_export_archive_cmd: "bsdcpio --quiet -o -H pax"
 
