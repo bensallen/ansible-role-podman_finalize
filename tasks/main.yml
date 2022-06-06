@@ -19,7 +19,7 @@
         podman_find_cmd: find .{% for path in podman_export_excludes %} -path {{ '.' + path|quote }} -prune -o{% endfor %} -print
 
     - name: Mount container
-      ansible.builtin.command: podman unshare -- podman mount "{{ podman_working_name }}"
+      ansible.builtin.command: podman mount "{{ podman_working_name }}"
       register: podman_mount_path
 
     - name: Export container
@@ -28,7 +28,7 @@
         chdir: "{{ podman_mount_path.stdout }}"
 
     - name: Unmount container
-      ansible.builtin.command: podman unshare -- podman umount "{{ podman_working_name }}"
+      ansible.builtin.command: podman umount "{{ podman_working_name }}"
 
     when: podman_export|bool
 
