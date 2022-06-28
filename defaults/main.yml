@@ -15,6 +15,9 @@ podman_working_name: "{{ podman_target_name }}-{{ podman_rev }}"
 # the name and rev as the tag
 podman_commit: true
 
+# Remove the working podman container when finished exporting and/or commiting.
+podman_cleanup_container: true
+
 # Export the container image to a compressed tar file
 podman_export: true
 

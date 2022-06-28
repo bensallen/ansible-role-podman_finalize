@@ -36,4 +36,5 @@
     containers.podman.podman_container:
       name: "{{ podman_working_name }}"
       state: absent
+    when: podman_cleanup_container|bool
   delegate_to: "{{ podman_build_host }}"
