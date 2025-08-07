@@ -14,6 +14,14 @@
     ansible.builtin.command: podman container commit "{{ podman_working_name }}" "{{ podman_target_name }}:{{ podman_rev }}"
     when: podman_commit|bool
 
+  - name: Push image to registry
+    containers.podman.podman_image:
+      name: "{{ podman_target_name }}:{{ podman_rev }}"
+      push: True
+      push_args:
+        dest: "{{ podman_push_registry }}/{{ podman_push_image }}:{{ podman_push_tag }}"
+    when: podman_push|bool
+
   - block:
     - set_fact:
         podman_find_cmd: find .{% for path in podman_export_excludes %} -path {{ '.' + path|quote }} -prune -o{% endfor %} -print

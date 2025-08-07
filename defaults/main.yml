@@ -18,6 +18,12 @@ podman_commit: true
 # Remove the working podman container when finished exporting and/or commiting.
 podman_cleanup_container: true
 
+# Push the container image to a registry
+podman_push: false
+podman_push_registry: "myregistry.example.com"
+podman_push_image: "{{ podman_target_name }}"
+podman_push_tag: "{{ podman_rev }}"
+
 # Export the container image to a compressed tar file
 podman_export: true
 
